@@ -3,6 +3,44 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics import accuracy_score, mean_absolute_error, median_absolute_error, r2_score
 import matplotlib.pyplot as plt
+from operator import itemgetter
+from typing import Tuple
+
+
+# Аналитическое вычисление коэффициентов регрессии
+def analytic_regr_coef(x_array : np.ndarray, 
+                       y_array : np.ndarray) -> Tuple[float, float]:
+    x_mean = np.mean(x_array)
+    y_mean = np.mean(y_array)
+    var1 = np.sum([(x-x_mean)**2 for x in x_array])
+    cov1 = np.sum([(x-x_mean)*(y-y_mean) for x, y in zip(x_array, y_array)])
+    b1 = cov1 / var1
+    b0 = y_mean - b1*x_mean
+    return b0, b1
+
+
+def draw_feature_importances(tree_model, X_dataset, figsize=(18,5)):
+    """
+    Вывод важности признаков в виде графика
+    """
+    # Сортировка значений важности признаков по убыванию
+    list_to_sort = list(zip(X_dataset.columns.values, tree_model.feature_importances_))
+    sorted_list = sorted(list_to_sort, key=itemgetter(1), reverse = True)
+    # Названия признаков
+    labels = [x for x,_ in sorted_list]
+    # Важности признаков
+    data = [x for _,x in sorted_list]
+    # Вывод графика
+    fig, ax = plt.subplots(figsize=figsize)
+    ind = np.arange(len(labels))
+    plt.bar(ind, data)
+    plt.xticks(ind, labels, rotation='vertical')
+    # Вывод значений
+    for a,b in zip(ind, data):
+        plt.text(a-0.05, b+0.01, str(round(b,3)))
+    plt.show()
+    return labels, data
+
 
 def test_model(model, y_test, X_test):
     print("mean_absolute_error:",
@@ -62,8 +100,6 @@ def print_accuracy_score_for_classes(
     for i in accs:
         print('{} \t {}'.format(i, accs[i]))
 
-
-from typing import Tuple
 
 def class_proportions(array: np.ndarray) -> Dict[int, Tuple[int, float]]:
     """
