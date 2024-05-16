@@ -1,10 +1,33 @@
 from typing import Dict
 import numpy as np
 import pandas as pd
-from sklearn.metrics import accuracy_score, mean_absolute_error, median_absolute_error, r2_score
 import matplotlib.pyplot as plt
 from operator import itemgetter
 from typing import Tuple
+from sklearn.utils.validation import check_is_fitted
+from sklearn.exceptions import NotFittedError
+
+from sklearn.utils.validation import check_is_fitted
+from sklearn.exceptions import NotFittedError
+from sklearn.metrics import accuracy_score, mean_absolute_error, median_absolute_error, r2_score, root_mean_squared_error
+
+def test_model(model, X_test=None, y_test=None, X_train=None, y_train=None):
+    try:
+        check_is_fitted(model)
+    except NotFittedError:
+        if X_train is None or y_train is None:
+            raise ValueError("Training data X_train and y_train must be provided if the model is not fitted.")
+        model.fit(X_train, y_train)
+    
+    if X_test is not None and y_test is not None:
+        print(model)
+        print("mean_absolute_error:", mean_absolute_error(y_test, model.predict(X_test)))
+        print("median_absolute_error:", median_absolute_error(y_test, model.predict(X_test)))
+        print("root_mean_squared_error:", root_mean_squared_error(y_test, model.predict(X_test)))
+        print("r2_score:", r2_score(y_test, model.predict(X_test)))
+        print("---------------------------------------")
+    else:
+        print("Model is fitted, but no test data provided for evaluation.")
 
 
 # Аналитическое вычисление коэффициентов регрессии
@@ -17,7 +40,6 @@ def analytic_regr_coef(x_array : np.ndarray,
     b1 = cov1 / var1
     b0 = y_mean - b1*x_mean
     return b0, b1
-
 
 def draw_feature_importances(tree_model, X_dataset, figsize=(18,5)):
     """
@@ -40,15 +62,6 @@ def draw_feature_importances(tree_model, X_dataset, figsize=(18,5)):
         plt.text(a-0.05, b+0.01, str(round(b,3)))
     plt.show()
     return labels, data
-
-
-def test_model(model, y_test, X_test):
-    print("mean_absolute_error:",
-          mean_absolute_error(y_test, model.predict(X_test)))
-    print("median_absolute_error:",
-          median_absolute_error(y_test, model.predict(X_test)))
-    print("r2_score:",
-          r2_score(y_test, model.predict(X_test)))
 
 def actual_predicted_scatter(y_test,y_pred,regressorName):
     plt.scatter(range(len(y_test)), y_test, color='blue', marker="x", s=30)
@@ -99,7 +112,6 @@ def print_accuracy_score_for_classes(
         print('Метка \t Accuracy')
     for i in accs:
         print('{} \t {}'.format(i, accs[i]))
-
 
 def class_proportions(array: np.ndarray) -> Dict[int, Tuple[int, float]]:
     """
