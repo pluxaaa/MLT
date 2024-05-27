@@ -6,9 +6,6 @@ from operator import itemgetter
 from typing import Tuple
 from sklearn.utils.validation import check_is_fitted
 from sklearn.exceptions import NotFittedError
-
-from sklearn.utils.validation import check_is_fitted
-from sklearn.exceptions import NotFittedError
 from sklearn.metrics import accuracy_score, mean_absolute_error, median_absolute_error, r2_score, root_mean_squared_error
 
 def test_model(model, X_test=None, y_test=None, X_train=None, y_train=None):
