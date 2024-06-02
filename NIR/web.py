@@ -70,7 +70,7 @@ def scale_data(data):
 def preprocess_data(data):
     data_scaled = scale_data(fill_data(data))
 
-    data_scaled.drop(columns=['DIS', 'RM', 'LSTAT', 'TAX', 'NOX'], inplace=True)
+    data_scaled.drop(columns=['DIS', 'TAX', 'NOX'], inplace=True)
 
     return data_scaled
 
